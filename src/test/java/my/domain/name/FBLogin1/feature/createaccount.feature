@@ -30,7 +30,6 @@ Feature: User Registration
 
   Background:
     Given I am on the "Sign Up" page
-
   @mismatched_passwords
   Scenario: Registration with mismatched passwords
     When I enter the following user details:
@@ -219,3 +218,29 @@ Scenario: Registration with invalid password complexity
   And I click the "Save Account Information" button
   Then I should receive an error message "Email already exists"
   And no user should be created
+
+  @duplicate_email
+  Scenario: Registration with an already existing email
+    Given a user with the email "existinguser@test.com" already exists
+    When I enter the following user details:
+      | Field        | Value                  |
+      | Username     | newuser                |
+      | Email        | existinguser@test.com  |
+      | Password     | SecurePass123          |
+      | Confirm Pass | SecurePass123          |
+    And I click the "Sign Up" button
+    Then I should see an error message "Email already in use"
+    And the account should not be created
+
+  @weak_password
+  Scenario: Registration with a weak password
+    When I enter the following user details:
+      | Field        | Value        |
+      | Username     | newuser      |
+      | Email        | newuser@test.com |
+      | Password     | 12345        |
+      | Confirm Pass | 12345        |
+    And I click the "Sign Up" button
+    Then I should see an error message "Password is too weak"
+    And the account should not be created
+
