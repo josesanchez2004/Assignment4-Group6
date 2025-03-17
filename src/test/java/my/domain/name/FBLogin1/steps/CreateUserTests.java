@@ -1,143 +1,163 @@
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import io.github.bonigarcia.wdm.WebDriverManager;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.When;
+import io.cucumber.java.en.Then;
+import static org.junit.Assert.assertTrue;
 
-import static org.junit.jupiter.api.Assertions.*;
+public class RegistrationSteps {
+    WebDriver driver;
 
-public class UserRegistrationTest {
-    private WebDriver driver;
-
-    @BeforeEach
-    public void setUp() {
-        WebDriverManager.chromedriver().setup();
+    // Step to open the registration page
+    @Given("I am on the Sign Up page")
+    public void i_am_on_the_sign_up_page() {
+        System.setProperty("webdriver.chrome.driver", "driver/chromedriver.exe");
         driver = new ChromeDriver();
-        driver.get("http://35.208.95.33:8080/actions/Account.action?signonForm=");
+        driver.get("http://35.208.95.33:8080/jpetstore/actions/Account.action?newAccountForm=");
     }
 
-    @AfterEach
-    public void tearDown() {
-        if (driver != null) {
-            driver.quit();
+    // Step for handling registration with mismatched passwords
+    @When("I enter user details with mismatched passwords")
+    public void i_enter_user_details_with_mismatched_passwords() {
+        driver.findElement(By.name("username")).sendKeys("12345678");
+        driver.findElement(By.name("email")).sendKeys("user@test.com");
+        driver.findElement(By.name("password")).sendKeys("Pass1234");
+        driver.findElement(By.name("confirmPassword")).sendKeys("Pass5678");
+        driver.findElement(By.name("firstName")).sendKeys("John");
+        driver.findElement(By.name("lastName")).sendKeys("Doe");
+        driver.findElement(By.name("phone")).sendKeys("1234567890");
+        driver.findElement(By.name("address1")).sendKeys("123 Main St");
+        driver.findElement(By.name("city")).sendKeys("Calgary");
+        driver.findElement(By.name("state")).sendKeys("AB");
+        driver.findElement(By.name("zip")).sendKeys("12345");
+        driver.findElement(By.name("country")).sendKeys("Canada");
+        driver.findElement(By.name("saveAccountInfo")).click();
+    }
+
+    @Then("I should see an error message {string}")
+    public void i_should_see_an_error_message(String errorMessage) {
+        WebElement error = driver.findElement(By.cssSelector(".error"));
+        assertTrue(error.getText().contains(errorMessage));
+    }
+
+    @Then("No user should be created")
+    public void no_user_should_be_created() {
+        assertTrue(driver.getCurrentUrl().contains("Account.action?newAccountForm"));
+    }
+
+    // Step for handling registration with empty fields
+    @When("I attempt to register without entering any details")
+    public void i_attempt_to_register_without_entering_any_details() {
+        driver.findElement(By.name("saveAccountInfo")).click();
+    }
+
+    @Then("I should receive an error message {string}")
+    public void i_should_receive_an_error_message(String errorMessage) {
+        WebElement error = driver.findElement(By.cssSelector(".error"));
+        assertTrue(error.getText().contains(errorMessage));
+    }
+
+    // Step for handling successful registration
+    @When("I enter valid user details")
+    public void i_enter_valid_user_details() {
+        driver.findElement(By.name("username")).sendKeys("newuser");
+        driver.findElement(By.name("email")).sendKeys("newuser@test.com");
+        driver.findElement(By.name("password")).sendKeys("SecurePass123");
+        driver.findElement(By.name("confirmPassword")).sendKeys("SecurePass123");
+        driver.findElement(By.name("firstName")).sendKeys("John");
+        driver.findElement(By.name("lastName")).sendKeys("Doe");
+        driver.findElement(By.name("phone")).sendKeys("1234567890");
+        driver.findElement(By.name("address1")).sendKeys("123 Main St");
+        driver.findElement(By.name("city")).sendKeys("Calgary");
+        driver.findElement(By.name("state")).sendKeys("AB");
+        driver.findElement(By.name("zip")).sendKeys("12345");
+        driver.findElement(By.name("country")).sendKeys("Canada");
+        driver.findElement(By.name("saveAccountInfo")).click();
+    }
+
+    @Then("I should be redirected to the login page")
+    public void i_should_be_redirected_to_the_login_page() {
+        assertTrue(driver.getCurrentUrl().contains("Account.action?signonForm"));
+    }
+
+    // Scenario Outline for handling missing fields
+    @Given("I enter valid user details with a missing {string}")
+    public void i_enter_valid_user_details_with_missing_field(String field) {
+        // Logic for entering details with one field missing as per the scenario
+        driver.findElement(By.name("username")).sendKeys("user123");
+        driver.findElement(By.name("email")).sendKeys("user123@test.com");
+        driver.findElement(By.name("password")).sendKeys("SecurePass123");
+        driver.findElement(By.name("confirmPassword")).sendKeys("SecurePass123");
+        driver.findElement(By.name("firstName")).sendKeys("John");
+        driver.findElement(By.name("lastName")).sendKeys("Doe");
+        driver.findElement(By.name("phone")).sendKeys("1234567890");
+        driver.findElement(By.name("address1")).sendKeys("123 Main St");
+        driver.findElement(By.name("city")).sendKeys("Calgary");
+        driver.findElement(By.name("state")).sendKeys("AB");
+        driver.findElement(By.name("zip")).sendKeys("12345");
+        driver.findElement(By.name("country")).sendKeys("Canada");
+
+        // Handle the missing field scenario (you can modify this dynamically)
+        if ("lastName".equals(field)) {
+            driver.findElement(By.name("lastName")).clear(); // Simulating missing last name
         }
     }
 
-    @Test
-    public void testMismatchedPasswords() {
-        fillForm("12345678", "user@test.com", "Pass1234", "Pass5678", "John", "Doe", "1234567890", "123 Main St", "Calgary", "AB", "12345", "Canada");
-        driver.findElement(By.name("newAccount")).click();
-
-        assertTrue(isErrorMessageDisplayed());
+    @Then("I should see an error message for {string}")
+    public void i_should_see_an_error_message_for_missing_field(String errorMessage) {
+        WebElement error = driver.findElement(By.cssSelector(".error"));
+        assertTrue(error.getText().contains(errorMessage));
     }
 
-    @Test
-    public void testEmptyFields() {
-        driver.findElement(By.name("newAccount")).click();
-
-        assertTrue(isErrorMessageDisplayed());
+    // Scenario for handling duplicate email
+    @When("I enter a duplicate email")
+    public void i_enter_a_duplicate_email() {
+        driver.findElement(By.name("email")).sendKeys("existinguser@test.com");
+        driver.findElement(By.name("username")).sendKeys("newuser");
+        driver.findElement(By.name("password")).sendKeys("SecurePass123");
+        driver.findElement(By.name("confirmPassword")).sendKeys("SecurePass123");
+        driver.findElement(By.name("firstName")).sendKeys("John");
+        driver.findElement(By.name("lastName")).sendKeys("Doe");
+        driver.findElement(By.name("phone")).sendKeys("1234567890");
+        driver.findElement(By.name("address1")).sendKeys("123 Main St");
+        driver.findElement(By.name("city")).sendKeys("Calgary");
+        driver.findElement(By.name("state")).sendKeys("AB");
+        driver.findElement(By.name("zip")).sendKeys("12345");
+        driver.findElement(By.name("country")).sendKeys("Canada");
+        driver.findElement(By.name("saveAccountInfo")).click();
     }
 
-    @Test
-    public void testMissingFirstName() {
-        fillForm("12345678", "user@test.com", "SecurePass123", "SecurePass123", "", "Doe", "1234567890", "123 Main St", "Calgary", "AB", "12345", "Canada");
-        driver.findElement(By.name("newAccount")).click();
-
-        assertTrue(isErrorMessageDisplayed());
+    @Then("I should see an error message saying {string}")
+    public void i_should_see_an_error_message_saying_duplicate_email(String errorMessage) {
+        WebElement error = driver.findElement(By.cssSelector(".error"));
+        assertTrue(error.getText().contains(errorMessage));
     }
+}
+@Scenario: Registration with invalid password complexity
+public void registration_with_invalid_password_complexity() {
+    @Given: User is on the registration page
+    driver.get("http://example.com/signup");
 
-    @Test
-    public void testMissingRequiredFields() {
-        String[][] fields = {
-            {"Last Name", "Last name is mandatory"},
-            {"Email", "Email is mandatory"},
-            {"Phone", "Phone number is mandatory"},
-            {"Address 1", "Address 1 is mandatory"},
-            {"City", "City is mandatory"},
-            {"State", "State is mandatory"},
-            {"Zip", "Zip code is mandatory"},
-            {"Country", "Country is mandatory"}
-        };
+    @When: User enters the following details with a weak password
+    driver.findElement(By.name("username")).sendKeys("user123");
+    driver.findElement(By.name("email")).sendKeys("user@test.com");
+    driver.findElement(By.name("password")).sendKeys("pass");  // Too short
+    driver.findElement(By.name("confirmPassword")).sendKeys("pass");
+    driver.findElement(By.name("firstName")).sendKeys("John");
+    driver.findElement(By.name("lastName")).sendKeys("Doe");
+    driver.findElement(By.name("phone")).sendKeys("1234567890");
+    driver.findElement(By.name("address1")).sendKeys("123 Main St");
+    driver.findElement(By.name("city")).sendKeys("Calgary");
+    driver.findElement(By.name("state")).sendKeys("AB");
+    driver.findElement(By.name("zip")).sendKeys("12345");
+    driver.findElement(By.name("country")).sendKeys("Canada");
+    driver.findElement(By.name("submit")).click();
 
-        for (String[] field : fields) {
-            fillForm("12345678", "user@test.com", "SecurePass123", "SecurePass123", "John", "Doe", "1234567890", "123 Main St", "Calgary", "AB", "12345", "Canada");
-            clearField(field[0]); 
-            driver.findElement(By.name("newAccount")).click();
-
-            assertTrue(isErrorMessageDisplayed());
-        }
-    }
-
-    @Test
-    public void testValidRegistrationWithLastNameAsUsername() {
-        fillForm("Doe", "user@test.com", "SecurePass123", "SecurePass123", "John", "Doe", "1234567890", "123 Main St", "Calgary", "AB", "12345", "Canada");
-        driver.findElement(By.name("newAccount")).click();
-
-        assertTrue(driver.getCurrentUrl().contains("main"));
-    }
-
-    @Test
-    public void testValidRegistrationWithEmptyAddress2() {
-        fillForm("12345678", "user@test.com", "SecurePass123", "SecurePass123", "John", "Doe", "1234567890", "123 Main St", "Calgary", "AB", "12345", "Canada");
-        driver.findElement(By.name("account.address2")).clear(); 
-        driver.findElement(By.name("newAccount")).click();
-
-        assertTrue(driver.getCurrentUrl().contains("main"));
-    }
-
-    @Test
-    public void testDuplicateUserId() {
-        fillForm("existinguser", "user@test.com", "SecurePass123", "SecurePass123", "John", "Doe", "1234567890", "123 Main St", "Calgary", "AB", "12345", "Canada");
-        driver.findElement(By.name("newAccount")).click();
-
-        assertTrue(isErrorMessageDisplayed());
-    }
-
-    @Test
-    public void testInvalidPasswordComplexity() {
-        fillForm("user123", "user@test.com", "pass", "pass", "John", "Doe", "1234567890", "123 Main St", "Calgary", "AB", "12345", "Canada");
-        driver.findElement(By.name("newAccount")).click();
-
-        assertTrue(isErrorMessageDisplayed());
-    }
-
-    @Test
-    public void testDuplicateEmail() {
-        fillForm("user123", "existing@test.com", "SecurePass123", "SecurePass123", "John", "Doe", "1234567890", "123 Main St", "Calgary", "AB", "12345", "Canada");
-        driver.findElement(By.name("newAccount")).click();
-
-        assertTrue(isErrorMessageDisplayed());
-    }
-
-    // Helper method to fill the registration form
-    private void fillForm(String username, String email, String password, String confirmPassword, String firstName, String lastName, String phone, String address1, String city, String state, String zip, String country) {
-        driver.findElement(By.name("username")).sendKeys(username);
-        driver.findElement(By.name("account.email")).sendKeys(email);
-        driver.findElement(By.name("password")).sendKeys(password);
-        driver.findElement(By.name("repeatedPassword")).sendKeys(confirmPassword);
-        driver.findElement(By.name("account.firstName")).sendKeys(firstName);
-        driver.findElement(By.name("account.lastName")).sendKeys(lastName);
-        driver.findElement(By.name("account.phone")).sendKeys(phone);
-        driver.findElement(By.name("account.address1")).sendKeys(address1);
-        driver.findElement(By.name("account.city")).sendKeys(city);
-        driver.findElement(By.name("account.state")).sendKeys(state);
-        driver.findElement(By.name("account.zip")).sendKeys(zip);
-        driver.findElement(By.name("account.country")).sendKeys(country);
-    }
-
-    private void clearField(String fieldName) {
-        driver.findElement(By.name("account." + fieldName.replace(" ", "").toLowerCase())).clear();
-    }
-
-    private boolean isErrorMessageDisplayed() {
-        try {
-            WebElement errorMessage = driver.findElement(By.cssSelector("ul.messages li"));
-            return !errorMessage.getText().isEmpty();
-        } catch (Exception e) {
-            return false;
-        }
-    }
+    @Then: System should show an error message
+    WebElement errorMessage = driver.findElement(By.id("error_message"));
+    assertTrue(errorMessage.getText().contains("Password must be at least 8 characters long"));
+    
+    @And: No user should be created
+    assertFalse(driver.getCurrentUrl().contains("account"));
 }
