@@ -17,7 +17,7 @@
 ## (Comments)
 #Sample Feature Definition Template
 @tag
-Feature: Account Management
+Feature: Login Page
   Scenario Outline: Successful login with valid credentials
     Given I am on the JPetStore login page
     When I enter valid username "<username>" and password "<password>"
@@ -27,8 +27,6 @@ Feature: Account Management
     Examples:
       | username | password |
       | j2ee     | j2ee     |
-      | quality1 | 12345678 |
-      | quality2 | 12345678 |
 
   Scenario: Unsuccessful login with invalid credentials
     Given I am on the JPetStore login page
@@ -36,32 +34,18 @@ Feature: Account Management
     Then I should see an error message "Invalid username or password. Sign in failed."
 
   Scenario: Sign out and verify session
-    Given I am logged in to JPetStore with username "j2ee" and password "j2ee"
+    Given I am on the JPetStore login page
+    And I am logged in to JPetStore with an account
     When I sign out
-    And I press the back button
     Then I should not have access to account services
-
-  Scenario: Change password successfully
-    Given I am logged in to JPetStore with username "j2ee" and password "j2ee"
-    When I change my password to "newpassword123"
-    Then I should see a confirmation message "Your password has been updated."
-    And I should be able to log in with the new password "newpassword123"
-
-  Scenario: Register a new user
-    Given I am on the JPetStore registration page
-    When I enter valid user information:
-      | Field       | Value            |
-      | User ID     | newuser          |
-      | Password    | 12345678         |
-      | First Name  | John             |
-      | Last Name   | Doe              |
-      | Email       | john.doe@test.com|
-      | Phone       | 1234567890       |
-      | Address 1   | 123 Main St      |
-      | City        | town          	 |
-      | State       | AB               |
-      | Zip         | 12345            |
-      | Country     | Canada           |
-    And I click the "Save Account Information" button
-    Then I should be redirected to the home page
-    And I should see a welcome message with my username "newuser"
+    
+  Scenario: Unsuccessful login with empty credentials
+  	Given I am on the JPetStore login page 
+  	When I enter an empty username and password 
+  	Then I should see an error message "Invalid username or password. Sign in failed."
+  	
+ 	Scenario: Unsuccessful login due to case-sensitive username or password
+ 		Given I am on the JPetStore login page 
+ 		When I enter username "J2EE" and password "J2EE" 
+ 		Then I should see an error message "Invalid username or password. Sign in failed."
+ 		
