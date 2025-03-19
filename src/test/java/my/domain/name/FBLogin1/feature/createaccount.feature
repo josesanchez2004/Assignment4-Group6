@@ -75,7 +75,7 @@ Feature: User Registration
       | City      | City is mandatory                |
       | State     | State is mandatory               |
       | Zip       | Zip code is mandatory            |
-      | Country   | Country is mandatory             
+      | Country   | Country is mandatory             |
 
 
   @duplicate_userid
