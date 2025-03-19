@@ -450,7 +450,90 @@ fail();
 }
 }
 
-	
+@Given("an existing user ID {string}")
+public void an_existing_user_id(String userID) {
+  
+  ;
+}
+
+@When("I enter all user details:")
+public void i_enter_all_user_details() {
+    driver.findElement(By.name("username")).sendKeys("j2ee"); 
+    driver.findElement(By.name("account.email")).sendKeys("utsavg03@gmail.com");
+    driver.findElement(By.name("password")).sendKeys("Pass1234");
+    driver.findElement(By.name("repeatedPassword")).sendKeys("Pass1234");
+    driver.findElement(By.name("account.firstName")).sendKeys("John");
+    driver.findElement(By.name("account.lastName")).sendKeys("Doe");
+    driver.findElement(By.name("account.phone")).sendKeys("1234567890");
+    driver.findElement(By.name("account.address1")).sendKeys("123 Main St");
+    driver.findElement(By.name("account.city")).sendKeys("Calgary");
+    driver.findElement(By.name("account.state")).sendKeys("AB");
+    driver.findElement(By.name("account.zip")).sendKeys("12345");
+    driver.findElement(By.name("account.country")).sendKeys("Canada");
+}
+
+@When ("I click the _button_")
+public void i_click_the_buttons_() {
+driver.findElement(By.name("newAccount")).click();
+}
+
+@Then("I should receive an error _message_")
+public void i_should_receive_an_error_messages_() {
+try {
+WebElement error = driver.findElement(By.className("messages"));
+        assertTrue(error.isDisplayed());
+
+}catch(Exception e) {
+fail();
+
+}
+}
+
+
+
+
+
+
+@Given("an existing email {string}")
+public void an_existing_email(String userID) {
+  
+  ;
+}
+
+@When("I enter all user _details_:")
+public void i_enter_all_user_details_() {
+    driver.findElement(By.name("username")).sendKeys("j2ee"); 
+    driver.findElement(By.name("account.email")).sendKeys("user@test.com");
+    driver.findElement(By.name("password")).sendKeys("Pass1234");
+    driver.findElement(By.name("repeatedPassword")).sendKeys("Pass1234");
+    driver.findElement(By.name("account.firstName")).sendKeys("John");
+    driver.findElement(By.name("account.lastName")).sendKeys("Doe");
+    driver.findElement(By.name("account.phone")).sendKeys("1234567890");
+    driver.findElement(By.name("account.address1")).sendKeys("123 Main St");
+    driver.findElement(By.name("account.city")).sendKeys("Calgary");
+    driver.findElement(By.name("account.state")).sendKeys("AB");
+    driver.findElement(By.name("account.zip")).sendKeys("12345");
+    driver.findElement(By.name("account.country")).sendKeys("Canada");
+}
+
+@When ("I click the button")
+public void i_click_the_button_() {
+driver.findElement(By.name("newAccount")).click();
+}
+
+//@Then("I should receive an error message")
+//public void i_should_receive_an_error_message_() {
+//try {
+//WebElement error = driver.findElement(By.className("messages"));
+//        assertTrue(error.isDisplayed());
+//
+//}catch(Exception e) {
+//fail();
+//
+//}
+//}
+
+
 	
 }
 

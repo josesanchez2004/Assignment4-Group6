@@ -39,6 +39,21 @@ Scenario: Registration with all fields empty
 Scenario: Registration with  required fields empty
   When I click the "Save Account Information" button without entering required details
   Then I should get a error message
+  
+  @duplicateuserid
+  Scenario: Registration with an existing user ID
+    Given an existing user ID "existinguser"
+    When I enter all user details:
+    And I click the button
+    Then I should receive an error message
+
+
+  @duplicate_email
+  Scenario: Registration with an existing user email
+    Given an existing email "existinguser"
+    When I enter all user details:
+    And I click the button
+    Then I should receive an error message
     
     
 
