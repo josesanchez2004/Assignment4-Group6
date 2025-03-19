@@ -1,5 +1,6 @@
 package my.domain.name.FBLogin1.steps;
 
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -7,23 +8,28 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 import static org.junit.Assert.*;
 
+import io.cucumber.java.After;
+import io.cucumber.java.AfterAll;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
 
 public class LoginSteps {
-    WebDriver driver;
+    static WebDriver driver;
 
     @Given("I am on the JPetStore login page")
     public void i_am_on_the_j_pet_store_login_page() {
         System.setProperty("webdriver.chrome.driver", "driver/chromedriver.exe");
         driver = new ChromeDriver();
-        driver.get("http://35.208.95.33:8080/jpetstore/actions/Account.action;jsessionid=E52337A8CB1611E88D1085A7C25CDCCE?signonForm=");
+        driver.get("http://35.208.95.33:8080/jpetstore/actions/Account.action;?signonForm=");
     }
 
     @When("I enter valid username {string} and password {string}")
     public void i_enter_valid_username_and_password(String username, String password) {
+    	driver.findElement(By.name("username")).clear();
         driver.findElement(By.name("username")).sendKeys(username);
+        
+        driver.findElement(By.name("password")).clear();
         driver.findElement(By.name("password")).sendKeys(password);
         driver.findElement(By.name("signon")).click();
     }
@@ -37,7 +43,7 @@ public class LoginSteps {
 
     @Then("I should be redirected to the home page")
     public void i_should_be_redirected_to_the_home_page() {
-        assertTrue(driver.getCurrentUrl().contains("main"));
+        assertTrue(driver.getCurrentUrl().contains("35.208.95.33:8080/jpetstore/actions/Catalog.action"));
     }
 
     @Then("I should see my account information")
@@ -52,13 +58,6 @@ public class LoginSteps {
         assertTrue(error.getText().contains(errorMessage));
     }
     
-    @Given("I am logged in to JPetStore with an account")
-    public void i_should_be_logged_in() {
-        driver.findElement(By.name("username")).sendKeys("j2ee");
-        driver.findElement(By.name("password")).sendKeys("j2ee");
-        driver.findElement(By.name("signon")).click();
-    }
-    
     @When("I sign out")
     public void i_should_sign_out() {
     	driver.findElement(By.linkText("Sign Out")).click();
@@ -66,9 +65,8 @@ public class LoginSteps {
     
     @When("I should not have access to account services")
     public void i_should_not_have_access() {
-    	driver.get("http://35.208.95.33:8080/jpetstore");
+    	assertTrue(driver.getCurrentUrl().contains("http://35.208.95.33:8080/jpetstore/actions/Catalog.action"));
     }
-    
     @When("I enter an empty username and password")
     public void i_entered_empty_username_and_password() {
         driver.findElement(By.name("username")).sendKeys(" ");
@@ -201,7 +199,193 @@ public class LoginSteps {
         assertTrue(error.isDisplayed());
     }
     
+    @When("I change my password to newpassword123")
+    public void change_password_to_different(){
+    	driver.findElement(By.linkText("My Account")).click();
+		
+		driver.findElement(By.name("password")).sendKeys("newpassword123");
+        driver.findElement(By.name("repeatedPassword")).sendKeys("newpassword123");
+        driver.findElement(By.name("editAccount")).click();
+    }
+    
+	@Then("I should be able to log in with the new password newpassword123")
+	public void i_should_be_able_to_log_in_with_the_new_password_newpassword123() {
+		driver.findElement(By.linkText("Sign Out")).click();
+		
+		driver.findElement(By.name("username")).clear();
+	    driver.findElement(By.name("username")).sendKeys("j2ee");
+	    
+	    driver.findElement(By.name("password")).clear();
+	    driver.findElement(By.name("password")).sendKeys("newPassword123");
+	    driver.findElement(By.name("signon")).click();
+	}
+
+
+
+
+	@When("I attempt to change my password by entering two mismatching values")
+	public void i_attempted_non_matching_values() {
+		driver.findElement(By.linkText("My Account")).click();
+		
+		driver.findElement(By.name("password")).sendKeys("newpassword123");
+        driver.findElement(By.name("repeatedPassword")).sendKeys("newpassword");
+        driver.findElement(By.name("editAccount")).click();
+	}
+	
+	@Then("I should see an error message Passwords do not match")
+	public void i_should_see_an_error_passwords_dont_match() {
+		WebElement error = driver.findElement(By.className("messages"));
+		assertTrue(error.isDisplayed());
+	}
+	
+	@Given("I am logged in to JPetStore with username j2ee and password j2ee")
+	public void i_am_logged_in_with_account() {
+		driver.findElement(By.name("username")).clear();
+		driver.findElement(By.name("username")).sendKeys("j2ee");
+
+		// Clear the password field before entering the password.
+		driver.findElement(By.name("password")).clear();
+		driver.findElement(By.name("password")).sendKeys("j2ee");
+		
+		driver.findElement(By.name("signon")).click();
+	}
+	
+	@Given("I am logged in to JPetStore with username j2ee and password newpassword123")
+	public void i_am_logged_in_with_new_password() {
+		driver.findElement(By.name("username")).clear();
+		driver.findElement(By.name("username")).sendKeys("j2ee");
+
+		// Clear the password field before entering the password.
+		driver.findElement(By.name("password")).clear();
+		driver.findElement(By.name("password")).sendKeys("newpassword123");
+		
+		driver.findElement(By.name("signon")).click();
+	}
+	
+	/**
+	 * This one will fail on purpose as there is no confirmation message displayed. 
+	 */
+	@Given("I should be redirected back to home page")
+	public void i_should_see_a_confirmation_message() {
+		assertTrue(driver.getCurrentUrl().contains("35.208.95.33:8080"));
+
+	}
+	
+	@When("I change my password to p")
+	public void i_changed_password_to_p() {
+    	driver.findElement(By.linkText("My Account")).click();
+		
+		driver.findElement(By.name("password")).sendKeys("p");
+        driver.findElement(By.name("repeatedPassword")).sendKeys("p");
+        driver.findElement(By.name("editAccount")).click();
+	}
+	
+	@Then("I should see an error message Password must be at least eight characters long")
+	public void see_error_message_characters_long() {
+		WebElement error = driver.findElement(By.className("messages"));
+		
+		if(error == null) {
+			fail();
+		}
+		assertTrue(error.isDisplayed());
+	}
+    
+	@Given("I am logged in to JPetStore with username quality1 and password")
+	public void logged_in_with_quality(){
+		driver.findElement(By.name("username")).clear();
+		driver.findElement(By.name("username")).sendKeys("quality1");
+
+		// Clear the password field before entering the password.
+		driver.findElement(By.name("password")).clear();
+		driver.findElement(By.name("password")).sendKeys("12345678");
+		
+		driver.findElement(By.name("signon")).click();
+	}
+	
+	@Given("I am logged in to JPetStore with username quality2 and password")
+	public void logged_in_with_quality2() {
+		driver.findElement(By.name("username")).clear();
+		driver.findElement(By.name("username")).sendKeys("quality2");
+
+		// Clear the password field before entering the password.
+		driver.findElement(By.name("password")).clear();
+		driver.findElement(By.name("password")).sendKeys("12345678");
+		
+		driver.findElement(By.name("signon")).click();
+	}
+	
+	@AfterAll
+    public static void tearDown() {
+		
+        System.setProperty("webdriver.chrome.driver", "driver/chromedriver.exe");
+        driver = new ChromeDriver();
+        driver.get("http://35.208.95.33:8080/jpetstore/actions/Account.action;?signonForm=");
+        
+		driver.findElement(By.name("username")).clear();
+		driver.findElement(By.name("username")).sendKeys("j2ee");
+
+		// Clear the password field before entering the password.
+		driver.findElement(By.name("password")).clear();
+		driver.findElement(By.name("password")).sendKeys("newpassword123");
+		
+		driver.findElement(By.name("signon")).click();
+		
+		driver.findElement(By.linkText("My Account")).click();
+		
+		driver.findElement(By.name("password")).sendKeys("j2ee");
+        driver.findElement(By.name("repeatedPassword")).sendKeys("j2ee");
+        driver.findElement(By.name("editAccount")).click();
+    }
+	
+	@Then("I should see an error message Invalid username or password. Sign in failed.")
+	public void see_an_error_message_invalid_user() {
+		
+		assertTrue(driver.getCurrentUrl().contains("http://35.208.95.33:8080/jpetstore/actions/Account.action"));
+	}
+	
+	@Given("I am logged in to JPetStore with an account")
+	public void logged_in() {
+		driver.findElement(By.name("username")).clear();
+		driver.findElement(By.name("username")).sendKeys("quality1");
+
+		// Clear the password field before entering the password.
+		driver.findElement(By.name("password")).clear();
+		driver.findElement(By.name("password")).sendKeys("12345678");
+		
+		driver.findElement(By.name("signon")).click();
+	}
+	
+	@When("I enter an empty username and password ")
+	public void enter_username_password() {
+		driver.findElement(By.name("username")).sendKeys(" ");
+
+		driver.findElement(By.name("password")).sendKeys(" ");
+		
+		driver.findElement(By.name("signon")).click();
+	}
+	
+	@When("I enter username J2EE and password J2EE")
+	public void enter_wrong_username() {
+		driver.findElement(By.name("username")).clear();
+		driver.findElement(By.name("username")).sendKeys("J2EE");
+
+		// Clear the password field before entering the password.
+		driver.findElement(By.name("password")).clear();
+		driver.findElement(By.name("password")).sendKeys("J2EE");
+		
+		driver.findElement(By.name("signon")).click();
+	}
+	@Then("I should see an error message Invalid username or password")
+	public void error_message_password_invalid() {
+		WebElement error = driver.findElement(By.className("messages"));
+		assertTrue(error.isDisplayed());
+	}
+	
+	
+	
+	
 }
+
 
   
 	/*

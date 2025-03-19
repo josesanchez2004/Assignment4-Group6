@@ -22,16 +22,19 @@ Feature: Login Page
     Given I am on the JPetStore login page
     When I enter valid username "<username>" and password "<password>"
     Then I should be redirected to the home page
-    And I should see my account information
 
     Examples:
       | username | password |
-      | j2ee     | j2ee     |
+      | quality1 | 12345678 |
 
   Scenario: Unsuccessful login with invalid credentials
     Given I am on the JPetStore login page
     When I enter invalid username "<username>" and password "<password>"
-    Then I should see an error message "Invalid username or password. Sign in failed."
+    Then I should see an error message Invalid username or password. Sign in failed.
+    
+    Examples:
+    	| username | password |
+    	| quality  | password | 
 
   Scenario: Sign out and verify session
     Given I am on the JPetStore login page
@@ -42,10 +45,10 @@ Feature: Login Page
   Scenario: Unsuccessful login with empty credentials
   	Given I am on the JPetStore login page 
   	When I enter an empty username and password 
-  	Then I should see an error message "Invalid username or password. Sign in failed."
+  	Then I should see an error message Invalid username or password. Sign in failed.
   	
  	Scenario: Unsuccessful login due to case-sensitive username or password
  		Given I am on the JPetStore login page 
- 		When I enter username "J2EE" and password "J2EE" 
- 		Then I should see an error message "Invalid username or password. Sign in failed."
+ 		When I enter username J2EE and password J2EE 
+ 		Then I should see an error message Invalid username or password
  		

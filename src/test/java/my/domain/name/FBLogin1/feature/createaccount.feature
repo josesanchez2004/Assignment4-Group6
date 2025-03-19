@@ -17,12 +17,6 @@
 ## (Comments)
 #Sample Feature Definition Template
 # Author: utsavg03@gmail.com
-# Keywords Summary:
-# Feature: User Registration
-# Scenario: Various registration cases including valid and invalid inputs.
-# Given: User is on the registration page.
-# When: User enters different sets of input.
-# Then: System validates and either creates the user or shows errors.
 
 @registration
 Feature: User Registration
@@ -30,6 +24,7 @@ Feature: User Registration
 
   Background:
     Given I am on the "Sign Up" page
+
   @mismatched_passwords
   Scenario: Registration with mismatched passwords
     When I enter the following user details:
@@ -42,7 +37,7 @@ Feature: User Registration
       | Last Name    | Doe             |
       | Phone        | 1234567890      |
       | Address 1    | 123 Main St     |
-      | City       	 | Calgary         |
+      | City         | Calgary         |
       | State        | AB              |
       | Zip          | 12345           |
       | Country      | Canada          |
@@ -56,7 +51,6 @@ Feature: User Registration
     Then I should receive an error message "All fields are mandatory"
     And no user should be created
 
-
   @missing_individual_fields
   Scenario Outline: Registration with missing required fields
     When I enter my student ID as the username
@@ -67,16 +61,15 @@ Feature: User Registration
     And no user should be created
 
     Examples:
-      | Field     | Value                      |
-      | Last Name | Last name is mandatory            |
-      | Email     | Email is mandatory                |
-      | Phone     | Phone number is mandatory         |
-      | Address 1 | Address 1 is mandatory           |
-      | City      | City is mandatory                |
-      | State     | State is mandatory               |
-      | Zip       | Zip code is mandatory            |
-      | Country   | Country is mandatory             |
-
+      | Field     | Error Message                  |
+      | Last Name | Last name is mandatory         |
+      | Email     | Email is mandatory            |
+      | Phone     | Phone number is mandatory     |
+      | Address 1 | Address 1 is mandatory        |
+      | City      | City is mandatory             |
+      | State     | State is mandatory            |
+      | Zip       | Zip code is mandatory         |
+      | Country   | Country is mandatory          |
 
   @duplicate_userid
   Scenario: Registration with an existing user ID
@@ -91,34 +84,34 @@ Feature: User Registration
       | Last Name    | Doe               |
       | Phone        | 1234567890        |
       | Address 1    | 123 Main St       |
-      | City       	 | Calgary           |
+      | City         | Calgary           |
       | State        | AB                |
-      | Zip         | 12345              |
-      | Country     | Canada             |
+      | Zip          | 12345             |
+      | Country      | Canada            |
     And I click the "Save Account Information" button
     Then I should receive an error message "User ID already exists"
     And no user should be created
 
-   @password_complexity
-Scenario: Registration with invalid password complexity
-  When I enter the following user details:
-    | Field        | Value           |
-    | Username     | user123         |
-    | Email        | user@test.com   |
-    | Password     | pass            |  # Too short
-    | Confirm Pass | pass            |
-    | First Name   | John            |
-    | Last Name    | Doe             |
-    | Phone        | 1234567890      |
-    | Address 1    | 123 Main St     |
-    | City       	 | Calgary         |
-    | State        | AB              |
-    | Zip          | 12345           |
-    | Country      | Canada          |
-  And I click the "Save Account Information" button
-  Then I should receive an error message "Password must be at least 8 characters long"
-  And no user should be created 
- 
+  @password_complexity
+  Scenario: Registration with invalid password complexity
+    When I enter the following user details:
+      | Field        | Value           |
+      | Username     | user123         |
+      | Email        | user@test.com   |
+      | Password     | pass            |  # Too short
+      | Confirm Pass | pass            |
+      | First Name   | John            |
+      | Last Name    | Doe             |
+      | Phone        | 1234567890      |
+      | Address 1    | 123 Main St     |
+      | City         | Calgary         |
+      | State        | AB              |
+      | Zip          | 12345           |
+      | Country      | Canada          |
+    And I click the "Save Account Information" button
+    Then I should receive an error message "Password must be at least 8 characters long"
+    And no user should be created 
+
   @duplicate_email
   Scenario: Registration with an already existing email
     Given a user with the email "existinguser@test.com" already exists
@@ -131,5 +124,6 @@ Scenario: Registration with invalid password complexity
     And I click the "Sign Up" button
     Then I should see an error message "Email already in use"
     And the account should not be created
+
 
 
