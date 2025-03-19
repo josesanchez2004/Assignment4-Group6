@@ -2,6 +2,7 @@ package my.domain.name.FBLogin1.steps;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.By.ByClassName;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -10,6 +11,7 @@ import static org.junit.Assert.*;
 
 import io.cucumber.java.After;
 import io.cucumber.java.AfterAll;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
@@ -105,11 +107,11 @@ public class LoginSteps {
         driver.findElement(By.name("saveAccountInfo")).click();
     }
 
-    @Then("I should see an error message")
-    public void i_should_see_an_error_message() {
-        WebElement error = driver.findElement(By.cssSelector("#Content .messages li"));
-        assertTrue(error.isDisplayed()); 
-    }
+//    @Then("I should see an error message")
+//    public void i_should_see_an_error_message() {
+//        WebElement error = driver.findElement(By.cssSelector("#Content .messages li"));
+//        assertTrue(error.isDisplayed()); 
+//    }
 
     @Then("No user should be created")
     public void no_user_should_be_created() {
@@ -121,11 +123,11 @@ public class LoginSteps {
         driver.findElement(By.name("saveAccountInfo")).click();
     }
 
-    @Then("I should receive an error message")
-    public void i_should_receive_an_error_message() {
-        WebElement error = driver.findElement(By.cssSelector("#Content .messages li"));
-        assertTrue(error.isDisplayed()); 
-    }
+//    @Then("I should receive an error message")
+//    public void i_should_receive_an_error_message() {
+//        WebElement error = driver.findElement(By.className("messages"));
+//        assertTrue(error.isDisplayed()); 
+//    }
 
     @When("I enter valid user details")
     public void i_enter_valid_user_details() {
@@ -381,7 +383,73 @@ public class LoginSteps {
 		assertTrue(error.isDisplayed());
 	}
 	
-	
+	@Given("I am on the {string} page")
+    public void i_am_on_the_first_page(String page) {
+        System.setProperty("webdriver.chrome.driver", "driver/chromedriver.exe");        
+        driver = new ChromeDriver();
+        driver.get("http://35.208.95.33:8080/jpetstore/actions/Account.action?newAccountForm=");
+    }    
+
+    @When("I enter mismatching password:")
+    public void i_enter_the_following_user_details() {
+    driver.findElement(By.name("username")).sendKeys("sss");
+        driver.findElement(By.name("password")).sendKeys("Pass1234");
+        driver.findElement(By.name("repeatedPassword")).sendKeys("Pass12344");
+        
+    }
+
+    @And("I click the {string} button")
+    public void i_click_the_button(String button) {
+        driver.findElement(By.name("newAccount")).click();
+    }
+
+    @Then("I should receive an error message")
+    public void i_should_receive_an_error_message_dup() {
+    WebElement error = driver.findElement(By.className("messages"));
+        assertTrue(error.isDisplayed());
+    }
+
+
+
+    @When("I click the {string} button without entering any details")
+    public void i_click_the_button_without_entering_any_details(String buttonName) {
+        driver.findElement(By.name("newAccount")).click();
+    }
+
+    @Then("I should get an error message")
+    public void error_message_then() {
+    try {
+    	WebElement error = driver.findElement(By.className("messages"));
+        assertTrue(error.isDisplayed());
+
+    }catch(Exception e) {
+    	fail();
+
+    }
+   }
+    
+
+    @When("I click the {string} button without entering required details")
+public void i_click_the_button_without_entering_some_details(String buttonName) {
+      driver.findElement(By.name("username")).sendKeys("j2ee");
+        driver.findElement(By.name("password")).sendKeys("j2ee");
+        driver.findElement(By.name("repeatedPassword")).sendKeys("j2ee");
+    
+    driver.findElement(By.name("newAccount")).click();
+}
+
+@Then("I should get a error message")
+public void should_got_a_error_message() {
+try {
+WebElement error = driver.findElement(By.className("messages"));
+        assertTrue(error.isDisplayed());
+
+}catch(Exception e) {
+fail();
+
+}
+}
+
 	
 	
 }
